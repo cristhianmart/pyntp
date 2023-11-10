@@ -17,5 +17,3 @@ st.write('You selected:', option)
 df =df[df['nombre_comuna'] == option]
 
 df
-
-
