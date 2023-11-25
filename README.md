@@ -3,6 +3,7 @@ Descripción General
 Este script en Python analiza datos de suicidios de un conjunto de datos utilizando diversas técnicas de visualización. El conjunto de datos se carga mediante la biblioteca Pandas, y el análisis se realiza con Matplotlib, Seaborn, Plotly Express, Folium y Streamlit.
 Prerrequisitos
 •	Asegúrate de tener instaladas las bibliotecas de Python necesarias. Puedes instalarlas con el siguiente comando:
+Copy code
 pip install pandas matplotlib seaborn plotly folium streamlit 
 Uso
 1.	Carga de Datos:
@@ -37,6 +38,8 @@ Nota
 •	Este script proporciona información valiosa sobre datos de suicidios mediante diversas visualizaciones. Se pueden realizar ajustes y mejoras según requisitos específicos o fuentes de datos adicionales.
 
 
+
+
 Identificación de Monedas con YOLO
 Descripción General
 Este script en Python utiliza la biblioteca Streamlit para construir una aplicación web que permite a los usuarios cargar una imagen y detectar monedas en ella utilizando el modelo YOLO (You Only Look Once) de Ultralytics. El código también emplea la biblioteca PIL (Python Imaging Library) para el procesamiento de imágenes.
@@ -68,3 +71,4 @@ streamlit run app.py
 3.	Abre el enlace de Streamlit proporcionado en tu navegador para interactuar con la aplicación web.
 Nota
 •	Este script puede servir como una herramienta práctica para la detección de monedas en imágenes, proporcionando información sobre las clases detectadas y el valor monetario total. Ajusta los umbrales de confianza y los valores monetarios según tus necesidades específicas.
+
