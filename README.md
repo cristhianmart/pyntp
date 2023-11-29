@@ -96,3 +96,8 @@ streamlit run app.py
 Nota
 •	Este script puede servir como una herramienta práctica para la detección de monedas en imágenes, proporcionando información sobre las clases detectadas y el valor monetario total. Ajusta los umbrales de confianza y los valores monetarios según tus necesidades específicas.
 
+
+# Extraccion de documento con api Google sheets 
+
+• El proyecto consiste en una aplicación capaz de leer archivos de Google Sheet a través de un Id del documento.
+A continuación, filtra toda esa información y te regala los gráficos correspondientes a esta.
