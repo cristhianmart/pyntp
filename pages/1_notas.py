@@ -30,7 +30,7 @@ sheet = service.spreadsheets()
 SAMPLE_SPREADSHEET_ID = st.text_input('ID del documento de Google Sheet', '')
 
 # Definir el rango de celdas que se leerán del documento de Google Sheet
-SAMPLE_RANGE_NAME = 'Hoja 1!A3:O28'
+SAMPLE_RANGE_NAME = 'Hoja 1!A4:O28'
 
 # Crear un botón para desencadenar el proceso de recuperación de datos
 if st.button('Leer rango'):

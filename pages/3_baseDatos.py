@@ -1,66 +1,58 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import plotly.express as px
-import folium
 import streamlit as st
+
 
 df = pd.read_csv('BBDD - suicidios.csv')
 
-df['fecha'] = pd.to_datetime(df['fecha'], format='%d/%m/%Y', dayfirst=True)
 
+df['fecha'] = pd.to_datetime(df['fecha'], format='%d/%m/%Y', dayfirst=True)
 df['año'] = df['fecha'].dt.year
 
-#cantidad de intentos suicidas por año
-intentos_por_año = df.groupby('año')['Intentos suicidas'].sum()
-plt.figure(figsize=(8, 6))
-plt.plot(intentos_por_año.index, intentos_por_año.values, marker='o')
-plt.xlabel('Año')
-plt.ylabel('Cantidad de intentos suicidas')
-plt.title('Cantidad de intentos suicidas por año')
+# Cálculo de la cantidad total de intentos suicidas por año
+intentos_por_año = df.groupby('año')['Intentos suicidas'].sum().reset_index()
+total_intentos_año = intentos_por_año['Intentos suicidas'].sum()
 
-for i, txt in enumerate(intentos_por_año.values):
-    plt.text(intentos_por_año.index[i], txt, str(txt), ha='right', va='bottom')
-    
-st.pyplot(plt)  
+#Cantidad de intentos suicidas por año
+st.title('Cantidad de intentos suicidas por año')
+fig_line = px.line(intentos_por_año, x='año', y='Intentos suicidas', 
+                   labels={'año': 'Año', 'Intentos suicidas': 'Cantidad de intentos suicidas'},
+                   title=f'Cantidad de intentos suicidas por año - Total: {total_intentos_año}')
 
-#cantidad de intentos suicidas por estrato en un gráfico de línea
-intentos_por_estrato = df.groupby('estrato')['Intentos suicidas'].sum()
-plt.figure(figsize=(8, 6))
-intentos_por_estrato.plot(kind='bar', color='skyblue')
-plt.xlabel('Estrato')
-plt.ylabel('Cantidad de intentos suicidas')
-plt.title('Cantidad de intentos suicidas por estrato')
+fig_line.update_traces(mode='markers+lines', text=intentos_por_año['Intentos suicidas'], textposition='top center')
+st.plotly_chart(fig_line)
 
-for i, valor in enumerate(intentos_por_estrato.values):
-    plt.text(i, valor, str(valor), ha='center', va='bottom')
+#Cantidad de intentos suicidas por estrato
+st.title('Cantidad de intentos suicidas por estrato')
+intentos_por_estrato = df.groupby('estrato')['Intentos suicidas'].sum().reset_index()
+total_intentos_estrato = intentos_por_estrato['Intentos suicidas'].sum()
 
-plt.xticks(range(len(intentos_por_estrato.index)), intentos_por_estrato.index)
-st.pyplot(plt)
+fig_bar = px.bar(intentos_por_estrato, x='estrato', y='Intentos suicidas', 
+                 labels={'estrato': 'Estrato', 'Intentos suicidas': 'Cantidad de intentos suicidas'},
+                 title='Cantidad de intentos suicidas por estrato')
+fig_bar.update_traces(text=intentos_por_estrato['Intentos suicidas'], textposition='outside')
+fig_bar.update_layout(yaxis=dict(range=[0, total_intentos_estrato + 100]))
+st.plotly_chart(fig_bar)
 
-#nombre del barrio con más intentos suicidas
-barrio_mas_intentos = df.groupby('nombre_barrio')['Intentos suicidas'].sum().idxmax()
+#Barrios con más intentos suicidas
+st.title('Barrios con más intentos suicidas')
+df_filtrado = df[df['nombre_barrio'] != 'Sin información']
+intentos_por_barrio = df_filtrado.groupby('nombre_barrio')['Intentos suicidas'].sum().sort_values(ascending=False)
+top_20_barrios = intentos_por_barrio.head(20)
+barrios_df = pd.DataFrame({'Barrio': intentos_por_barrio.index, 'Intentos Suicidas': intentos_por_barrio.values})
+fig_barrios = px.bar(barrios_df[:20], x='Barrio', y='Intentos Suicidas', 
+                     labels={'Barrio': 'Barrio', 'Intentos Suicidas': 'Cantidad de intentos suicidas'},
+                     title='Barrios con más intentos suicidas')
+fig_barrios.update_layout(height=600, yaxis=dict(range=[0, max(barrios_df['Intentos Suicidas']) + 50]))
+fig_barrios.update_traces(text=barrios_df[:20]['Intentos Suicidas'], textposition='outside')
+barrio_seleccionado = st.selectbox('Selecciona un barrio', barrios_df['Barrio'])
+st.plotly_chart(fig_barrios)
+st.write(f"El barrio '{barrio_seleccionado}' tiene {intentos_por_barrio[barrio_seleccionado]} intentos suicidas.")
 
-#intentos suicidas por barrio
-intentos_por_barrio = df.groupby('nombre_barrio')['Intentos suicidas'].sum().sort_values(ascending=False)
-
-plt.figure(figsize=(10, 6))
-intentos_por_barrio.plot(kind='bar', color='skyblue')
-plt.xlabel('Barrio')
-plt.ylabel('Cantidad de intentos suicidas')
-plt.title('Intentos suicidas por barrio')
-plt.xticks(rotation=45)  
-plt.tight_layout()
-st.title('Barrio con más intentos suicidas y cantidad por barrio')
-st.write(f"El barrio con más intentos suicidas es: {barrio_mas_intentos}")
-st.pyplot(plt)
-
-#porcentaje de intentos suicidas por método
-porcentaje_por_metodo = df['Metodo'].value_counts(normalize=True) * 100
-plt.figure(figsize=(8, 6))
-porcentaje_por_metodo.plot(kind='pie', autopct='%1.1f%%', colors=['lightblue', 'lightgreen', 'lightcoral', 'lightskyblue'])
-plt.title('Porcentaje de intentos suicidas por método')
-plt.ylabel('')
-plt.tight_layout()
+#Porcentaje de intentos suicidas por método
 st.title('Porcentaje de intentos suicidas por método')
-st.pyplot(plt)
+porcentaje_por_metodo = df['Metodo'].value_counts(normalize=True) * 100
+top_20_metodos = porcentaje_por_metodo.head(20)
+fig_pie = px.pie(names=top_20_metodos.index, values=top_20_metodos.values,
+                 title='Los 20 métodos más utilizados en intentos de suicidio')
+st.plotly_chart(fig_pie)
